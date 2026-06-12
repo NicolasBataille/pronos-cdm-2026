@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    container_name: pronos-cdm
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Obligatoire : code que tes amis saisissent à l'inscription
+      INVITE_CODE: ${INVITE_CODE:-allez-les-bleus}
+      # Recommandé : clé API gratuite football-data.org pour les scores auto
+      FOOTBALL_DATA_API_KEY: ${FOOTBALL_DATA_API_KEY:-}
+      # Mets à 1 pour tester l'app avec des matchs simulés (sans clé API)
+      DEMO_MODE: ${DEMO_MODE:-0}
+    volumes:
+      # Persiste la base SQLite entre les redémarrages
+      - cdm-data:/app/data
+
+volumes:
+  cdm-data:
