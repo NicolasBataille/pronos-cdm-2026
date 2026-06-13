@@ -11,7 +11,8 @@ const schema = z.object({
     .min(2, "Pseudo trop court (2 caractères min).")
     .max(20, "Pseudo trop long (20 max).")
     .regex(/^[a-zA-Z0-9_-]+$/, "Lettres, chiffres, - et _ uniquement."),
-  displayName: z.string().trim().min(1).max(30).optional(),
+  // Optionnel : peut arriver vide depuis le formulaire, on retombe sur le pseudo
+  displayName: z.string().trim().max(30).optional().default(""),
   password: z.string().min(4, "Mot de passe trop court (4 caractères min).").max(100),
   avatar: z.string().trim().max(8).optional(),
   inviteCode: z.string(),

@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import fs from "node:fs";
@@ -41,6 +41,22 @@ export async function verifyPassword(pw: string, hash: string): Promise<boolean>
   return bcrypt.compare(pw, hash);
 }
 
+/**
+ * Le cookie n'est marqué `Secure` que sur une vraie connexion HTTPS.
+ * Sinon Safari (et le self-hosting en http://ip:3000) rejette le cookie
+ * et casse la session. `SECURE_COOKIES=1` force le flag si besoin.
+ */
+async function shouldUseSecureCookie(): Promise<boolean> {
+  if (process.env.SECURE_COOKIES === "1") return true;
+  if (process.env.SECURE_COOKIES === "0") return false;
+  try {
+    const h = await headers();
+    return h.get("x-forwarded-proto")?.split(",")[0].trim() === "https";
+  } catch {
+    return false;
+  }
+}
+
 export async function createSession(userId: number): Promise<void> {
   const token = await new SignJWT({ uid: userId })
     .setProtectedHeader({ alg: "HS256" })
@@ -52,7 +68,7 @@ export async function createSession(userId: number): Promise<void> {
   jar.set(COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: await shouldUseSecureCookie(),
     path: "/",
     maxAge: 30 * DAY,
   });
