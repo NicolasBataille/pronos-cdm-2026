@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
   is_admin INTEGER NOT NULL DEFAULT 0,
   doubles_left INTEGER NOT NULL DEFAULT 4,
   bancos_left INTEGER NOT NULL DEFAULT 1,
+  onboarded_at INTEGER,
   created_at INTEGER NOT NULL
 );
 

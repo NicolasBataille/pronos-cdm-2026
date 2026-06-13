@@ -15,6 +15,7 @@ export const users = sqliteTable("users", {
   isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
   doublesLeft: integer("doubles_left").notNull().default(4),
   bancosLeft: integer("bancos_left").notNull().default(1),
+  onboardedAt: integer("onboarded_at", { mode: "timestamp" }),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
 

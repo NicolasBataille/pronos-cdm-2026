@@ -6,6 +6,7 @@ export interface Me {
   isAdmin: boolean;
   doublesLeft: number;
   bancosLeft: number;
+  onboarded: boolean;
 }
 
 export interface TeamView {

@@ -12,7 +12,25 @@ function createDb() {
   sqlite.pragma("journal_mode = WAL");
   sqlite.pragma("foreign_keys = ON");
   sqlite.exec(DDL);
+  runMigrations(sqlite);
   return drizzle(sqlite, { schema });
+}
+
+/**
+ * Migrations additives idempotentes pour les bases existantes.
+ * SQLite lève une erreur si la colonne existe déjà — on l'ignore.
+ */
+function runMigrations(sqlite: Database.Database) {
+  const additiveColumns = [
+    "ALTER TABLE users ADD COLUMN onboarded_at INTEGER",
+  ];
+  for (const sql of additiveColumns) {
+    try {
+      sqlite.exec(sql);
+    } catch {
+      /* colonne déjà présente */
+    }
+  }
 }
 
 // Singleton survivant au hot-reload de Next en dev

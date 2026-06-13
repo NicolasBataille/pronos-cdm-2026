@@ -15,5 +15,6 @@ export const GET = handler(async () => {
     isAdmin: session.isAdmin,
     doublesLeft: user?.doublesLeft ?? 0,
     bancosLeft: user?.bancosLeft ?? 0,
+    onboarded: user?.onboardedAt != null,
   });
 });
