@@ -5,7 +5,7 @@ export function TeamBadge({ team, size = "md" }: { team: TeamView | null; size?:
 
   if (!team) {
     return (
-      <span className={`${dim} rounded-full bg-night-700 flex items-center justify-center text-white/30`}>
+      <span className={`${dim} rounded-lg bg-ink-800 flex items-center justify-center text-bone-faint`}>
         ?
       </span>
     );
@@ -22,7 +22,7 @@ export function TeamBadge({ team, size = "md" }: { team: TeamView | null; size?:
     return <img src={team.emblem} alt={team.name} className={`${dim} object-contain`} />;
   }
   return (
-    <span className={`${dim} rounded-full bg-night-700 flex items-center justify-center font-black text-xs`}>
+    <span className={`${dim} rounded-lg bg-ink-800 flex items-center justify-center display font-extrabold text-xs`}>
       {team.tla}
     </span>
   );

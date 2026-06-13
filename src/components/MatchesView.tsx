@@ -37,10 +37,10 @@ export function MatchesView({ me }: { me?: Me }) {
 
   if (!matches || matches.length === 0) {
     return (
-      <div className="text-center py-20 px-6">
-        <div className="text-6xl mb-4">📅</div>
-        <h2 className="text-xl font-black mb-2">Le tournoi arrive !</h2>
-        <p className="text-white/50 text-sm">
+      <div className="text-center py-24 px-6 animate-rise">
+        <div className="text-5xl mb-4">📋</div>
+        <h2 className="display text-2xl font-extrabold mb-2">Le tournoi arrive</h2>
+        <p className="text-bone-faint text-sm">
           Les matchs apparaîtront ici dès que le calendrier sera synchronisé.
         </p>
       </div>
@@ -49,7 +49,7 @@ export function MatchesView({ me }: { me?: Me }) {
 
   return (
     <div>
-      <div className="sticky top-[57px] z-20 -mx-4 px-4 py-2 backdrop-blur-md bg-night-900/60">
+      <div className="sticky top-14 z-20 -mx-4 px-4 py-2.5 bg-ink-950/85 backdrop-blur-md">
         <div className="flex gap-2">
           <FilterTab id="todo" current={filter} onClick={setFilter} label="À jouer" count={counts.todo} />
           <FilterTab id="live" current={filter} onClick={setFilter} label="En direct" count={counts.live} live />
@@ -60,15 +60,21 @@ export function MatchesView({ me }: { me?: Me }) {
       {filtered.length === 0 ? (
         <EmptyFilter filter={filter} />
       ) : (
-        <div className="space-y-6 mt-3">
-          {grouped.map(([stage, items]) => (
+        <div className="space-y-7 mt-3">
+          {grouped.map(([stage, items], gi) => (
             <section key={stage}>
-              <h2 className="text-xs font-black uppercase tracking-widest text-white/30 mb-2 ml-1">
-                {stageLabel(stage)}
-              </h2>
+              <div className="flex items-center gap-3 mb-3">
+                <h2 className="display text-xs font-extrabold uppercase tracking-[0.18em] text-bone-dim">
+                  {stageLabel(stage)}
+                </h2>
+                <span className="flex-1 h-px bg-ink-750" />
+                <span className="text-[10px] font-bold text-bone-faint num">{items.length}</span>
+              </div>
               <div className="space-y-3">
-                {items.map((m) => (
-                  <MatchCard key={m.id} match={m} me={me} />
+                {items.map((m, i) => (
+                  <div key={m.id} className="animate-rise" style={{ animationDelay: `${(gi * 3 + i) * 40}ms` }}>
+                    <MatchCard match={m} me={me} />
+                  </div>
                 ))}
               </div>
             </section>
@@ -80,32 +86,22 @@ export function MatchesView({ me }: { me?: Me }) {
 }
 
 function FilterTab({
-  id,
-  current,
-  onClick,
-  label,
-  count,
-  live,
+  id, current, onClick, label, count, live,
 }: {
-  id: Filter;
-  current: Filter;
-  onClick: (f: Filter) => void;
-  label: string;
-  count: number;
-  live?: boolean;
+  id: Filter; current: Filter; onClick: (f: Filter) => void; label: string; count: number; live?: boolean;
 }) {
   const active = current === id;
   return (
     <button
       onClick={() => onClick(id)}
-      className={`flex-1 py-2 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
-        active ? "bg-electric-500 text-night-900 shadow-lg" : "glass text-white/60"
+      className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-1.5 ${
+        active ? "bg-lime-400 text-onaccent" : "surface text-bone-dim hover:text-bone"
       }`}
     >
-      {live && count > 0 && <span className="w-1.5 h-1.5 rounded-full bg-magenta-500 animate-pulse" />}
-      {label}
+      {live && count > 0 && <span className={`w-1.5 h-1.5 rounded-full ${active ? "bg-ink-950" : "bg-tomato live-dot"}`} />}
+      <span className="display tracking-tight">{label}</span>
       {count > 0 && (
-        <span className={`text-xs ${active ? "text-night-900/60" : "text-white/30"}`}>{count}</span>
+        <span className={`text-xs num ${active ? "text-onaccent/60" : "text-bone-faint"}`}>{count}</span>
       )}
     </button>
   );
@@ -114,44 +110,34 @@ function FilterTab({
 function EmptyFilter({ filter }: { filter: Filter }) {
   const msg =
     filter === "todo"
-      ? { e: "🎉", t: "Tout est pronostiqué !", s: "Reviens quand de nouveaux matchs s'ouvrent." }
+      ? { e: "✅", t: "Tout est pronostiqué", s: "Reviens quand de nouveaux matchs s'ouvrent." }
       : filter === "live"
-        ? { e: "📺", t: "Aucun match en direct", s: "Reviens à l'heure du coup d'envoi !" }
+        ? { e: "📺", t: "Aucun match en direct", s: "Reviens à l'heure du coup d'envoi." }
         : { e: "⏳", t: "Aucun match terminé", s: "Les résultats arrivent bientôt." };
   return (
-    <div className="text-center py-16">
-      <div className="text-5xl mb-3">{msg.e}</div>
-      <h3 className="font-black">{msg.t}</h3>
-      <p className="text-white/40 text-sm mt-1">{msg.s}</p>
+    <div className="text-center py-20 animate-rise">
+      <div className="text-4xl mb-3">{msg.e}</div>
+      <h3 className="display font-extrabold text-lg">{msg.t}</h3>
+      <p className="text-bone-faint text-sm mt-1">{msg.s}</p>
     </div>
   );
 }
 
 function groupByStage(matches: MatchView[]): [string, MatchView[]][] {
-  const order = [
-    "GROUP_STAGE",
-    "LAST_32",
-    "LAST_16",
-    "QUARTER_FINALS",
-    "SEMI_FINALS",
-    "THIRD_PLACE",
-    "FINAL",
-  ];
+  const order = ["GROUP_STAGE", "LAST_32", "LAST_16", "QUARTER_FINALS", "SEMI_FINALS", "THIRD_PLACE", "FINAL"];
   const map = new Map<string, MatchView[]>();
   for (const m of matches) {
     if (!map.has(m.stage)) map.set(m.stage, []);
     map.get(m.stage)!.push(m);
   }
-  return [...map.entries()].sort(
-    (a, b) => order.indexOf(a[0]) - order.indexOf(b[0]),
-  );
+  return [...map.entries()].sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
 }
 
 function Skeleton() {
   return (
     <div className="space-y-3 mt-4">
       {[0, 1, 2].map((i) => (
-        <div key={i} className="glass rounded-3xl p-4 h-40 animate-pulse opacity-50" />
+        <div key={i} className="surface rounded-2xl h-44 animate-pulse opacity-40" />
       ))}
     </div>
   );

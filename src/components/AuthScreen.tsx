@@ -33,116 +33,106 @@ export function AuthScreen() {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-5 py-10">
-      <div className="w-full max-w-sm animate-[slide-up_0.5s_ease-out]">
-        <div className="text-center mb-8">
-          <div className="text-7xl mb-3 drop-shadow-[0_0_25px_rgba(251,191,36,0.4)]">🏆</div>
-          <h1 className="text-4xl font-black tracking-tight">
-            <span className="shimmer-gold">Pronos CDM</span>
+    <div className="relative min-h-dvh flex flex-col items-center justify-center px-5 py-10 z-10">
+      <div className="w-full max-w-sm animate-rise">
+        {/* Wordmark éditorial */}
+        <div className="mb-9">
+          <div className="flex items-center gap-2 text-lime-400 text-[11px] font-bold uppercase tracking-[0.25em] mb-2">
+            <span className="h-px w-6 bg-lime-400" />
+            Coupe du Monde · 2026
+          </div>
+          <h1 className="display text-[3.4rem] leading-[0.85] font-extrabold">
+            PRONOS
+            <span className="block text-lime-400">ENTRE POTES</span>
           </h1>
-          <p className="text-electric-400 font-bold text-lg tracking-widest mt-1">2026</p>
-          <p className="text-white/50 text-sm mt-3">
-            Le championnat de pronostics entre potes ⚽
+          <p className="text-bone-faint text-sm mt-3 max-w-[15rem]">
+            Le championnat de pronostics où on se chambre toute la compétition.
           </p>
         </div>
 
-        <div className="glass-strong rounded-3xl p-6 shadow-2xl">
-          <div className="flex gap-1 p-1 mb-6 bg-night-900/50 rounded-2xl">
-            <button
-              onClick={() => { setMode("login"); setError(""); }}
-              className={`flex-1 py-2.5 rounded-xl font-bold text-sm transition-all ${
-                mode === "login" ? "bg-electric-500 text-night-900 shadow-lg" : "text-white/60"
-              }`}
-            >
-              Connexion
-            </button>
-            <button
-              onClick={() => { setMode("register"); setError(""); }}
-              className={`flex-1 py-2.5 rounded-xl font-bold text-sm transition-all ${
-                mode === "register" ? "bg-electric-500 text-night-900 shadow-lg" : "text-white/60"
-              }`}
-            >
-              Inscription
-            </button>
-          </div>
+        {/* Carte façon billet de match */}
+        <div className="surface-raised rounded-2xl overflow-hidden">
+          <div className="h-1 foil" />
+          <div className="p-5">
+            <div className="flex gap-6 border-b border-line mb-5">
+              {(["login", "register"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => { setMode(m); setError(""); }}
+                  className={`relative pb-3 text-sm font-bold transition-colors ${
+                    mode === m ? "text-bone" : "text-bone-faint hover:text-bone-dim"
+                  }`}
+                >
+                  {m === "login" ? "Connexion" : "Inscription"}
+                  {mode === m && (
+                    <span className="absolute -bottom-px left-0 right-0 h-0.5 bg-lime-400 animate-rise" />
+                  )}
+                </button>
+              ))}
+            </div>
 
-          <form onSubmit={submit} className="space-y-4">
-            {mode === "register" && (
-              <div>
-                <label className="text-xs font-semibold text-white/50 uppercase tracking-wide ml-1">
-                  Ton avatar
-                </label>
-                <div className="grid grid-cols-8 gap-1.5 mt-2">
-                  {AVATARS.map((a) => (
-                    <button
-                      key={a}
-                      type="button"
-                      onClick={() => setAvatar(a)}
-                      className={`aspect-square rounded-xl text-xl flex items-center justify-center transition-all ${
-                        avatar === a
-                          ? "bg-electric-500/30 ring-2 ring-electric-400 scale-110"
-                          : "bg-night-900/40 hover:bg-night-700"
-                      }`}
-                    >
-                      {a}
-                    </button>
-                  ))}
+            <form onSubmit={submit} className="space-y-4">
+              {mode === "register" && (
+                <div>
+                  <Label>Ton avatar</Label>
+                  <div className="grid grid-cols-8 gap-1.5 mt-2">
+                    {AVATARS.map((a) => (
+                      <button
+                        key={a}
+                        type="button"
+                        onClick={() => setAvatar(a)}
+                        className={`aspect-square rounded-lg text-xl flex items-center justify-center transition-all ${
+                          avatar === a
+                            ? "bg-lime-400/15 ring-1 ring-lime-400 scale-105"
+                            : "bg-ink-900 hover:bg-ink-750"
+                        }`}
+                      >
+                        {a}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <Field
-              label="Pseudo"
-              value={username}
-              onChange={setUsername}
-              placeholder="ton_pseudo"
-              autoFocus
-            />
-            {mode === "register" && (
-              <Field
-                label="Nom affiché (optionnel)"
-                value={displayName}
-                onChange={setDisplayName}
-                placeholder="Comment on t'appelle"
-              />
-            )}
-            <Field
-              label="Mot de passe"
-              value={password}
-              onChange={setPassword}
-              type="password"
-              placeholder="••••••"
-            />
-            {mode === "register" && (
-              <Field
-                label="Code d'invitation"
-                value={inviteCode}
-                onChange={setInviteCode}
-                placeholder="Demande-le à l'orga 🤫"
-              />
-            )}
+              <Field label="Pseudo" value={username} onChange={setUsername} placeholder="ton_pseudo" autoFocus />
+              {mode === "register" && (
+                <Field label="Nom affiché (optionnel)" value={displayName} onChange={setDisplayName} placeholder="Comment on t'appelle" />
+              )}
+              <Field label="Mot de passe" value={password} onChange={setPassword} type="password" placeholder="••••••" />
+              {mode === "register" && (
+                <Field label="Code d'invitation" value={inviteCode} onChange={setInviteCode} placeholder="Demande-le à l'orga" />
+              )}
 
-            {error && (
-              <div className="bg-magenta-500/15 border border-magenta-500/30 text-magenta-200 text-sm rounded-xl px-4 py-2.5 animate-[pop_0.2s]">
-                {error}
-              </div>
-            )}
+              {error && (
+                <div className="border-l-2 border-tomato bg-tomato/10 text-[#f6b3a8] text-sm rounded-r-lg px-3 py-2.5 animate-pop">
+                  {error}
+                </div>
+              )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-gold-500 to-gold-400 text-night-900 font-black text-base py-3.5 rounded-2xl shadow-lg shadow-gold-500/20 hover:scale-[1.02] active:scale-95 transition-transform disabled:opacity-60 disabled:scale-100"
-            >
-              {loading ? "..." : mode === "login" ? "C'est parti ! ⚽" : "Rejoindre la partie 🚀"}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="display w-full bg-lime-400 text-onaccent font-extrabold text-base py-3.5 rounded-xl tracking-tight hover:bg-lime-300 active:scale-[0.98] transition-all disabled:opacity-60"
+              >
+                {loading ? "..." : mode === "login" ? "Entrer sur le terrain" : "Rejoindre la partie"}
+              </button>
+            </form>
+          </div>
         </div>
 
-        <p className="text-center text-white/30 text-xs mt-6">
-          Le premier inscrit devient l&apos;administrateur 👑
+        <p className="text-center text-bone-faint text-xs mt-5 tracking-wide">
+          Le premier inscrit prend le brassard de capitaine 👑
         </p>
       </div>
     </div>
+  );
+}
+
+function Label({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="text-[10px] font-bold text-bone-faint uppercase tracking-[0.15em]">
+      {children}
+    </label>
   );
 }
 
@@ -163,16 +153,14 @@ function Field({
 }) {
   return (
     <div>
-      <label className="text-xs font-semibold text-white/50 uppercase tracking-wide ml-1">
-        {label}
-      </label>
+      <Label>{label}</Label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         autoFocus={autoFocus}
-        className="w-full mt-1.5 bg-night-900/50 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-white/25 focus:outline-none focus:border-electric-400 focus:ring-2 focus:ring-electric-400/20 transition-all"
+        className="w-full mt-1.5 bg-ink-900 border border-line rounded-xl px-3.5 py-3 text-bone placeholder:text-bone-faint/60 focus:outline-none focus:border-lime-400 transition-colors"
       />
     </div>
   );

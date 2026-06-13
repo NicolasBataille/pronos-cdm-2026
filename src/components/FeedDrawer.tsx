@@ -13,42 +13,45 @@ export function FeedDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     <>
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity ${
+        className={`fixed inset-0 z-40 bg-black/60 transition-opacity ${
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       />
       <div
-        className={`fixed top-0 right-0 z-40 h-dvh w-[85%] max-w-sm glass-strong border-l border-white/10 transition-transform duration-300 ${
+        className={`fixed top-0 right-0 z-40 h-dvh w-[86%] max-w-sm bg-ink-900 border-l border-line transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <h2 className="font-black text-lg flex items-center gap-2">🔔 Le fil</h2>
+        <div className="flex items-center justify-between px-4 h-14 border-b border-line pitch-stripe">
+          <h2 className="display font-extrabold text-lg flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-lime-400 live-dot" /> Le fil
+          </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-night-700 flex items-center justify-center text-white/60 active:scale-90"
+            className="w-8 h-8 rounded-lg surface flex items-center justify-center text-bone-dim active:scale-90"
           >
             ✕
           </button>
         </div>
 
-        <div className="overflow-y-auto h-[calc(100dvh-65px)] p-3 space-y-2">
+        <div className="overflow-y-auto h-[calc(100dvh-3.5rem)] p-3 space-y-2">
           {!feed || feed.length === 0 ? (
-            <div className="text-center py-20 text-white/40">
+            <div className="text-center py-20 text-bone-faint">
               <div className="text-4xl mb-3">🌱</div>
               <p className="text-sm">Rien pour l&apos;instant.</p>
               <p className="text-xs mt-1">L&apos;activité du groupe s&apos;affichera ici.</p>
             </div>
           ) : (
-            feed.map((item) => (
+            feed.map((item, i) => (
               <div
                 key={item.id}
-                className="glass rounded-2xl p-3 flex items-start gap-3 animate-[slide-up_0.3s_ease-out]"
+                className="surface rounded-xl p-3 flex items-start gap-3 animate-rise"
+                style={{ animationDelay: `${i * 25}ms` }}
               >
                 <span className="text-xl shrink-0">{item.emoji ?? "📣"}</span>
                 <div className="min-w-0">
-                  <p className="text-sm text-white/85 leading-snug">{item.message}</p>
-                  <p className="text-[10px] text-white/30 mt-1">{timeAgo(item.createdAt)}</p>
+                  <p className="text-sm text-bone/90 leading-snug">{item.message}</p>
+                  <p className="text-[10px] text-bone-faint mt-1 uppercase tracking-wide">{timeAgo(item.createdAt)}</p>
                 </div>
               </div>
             ))
