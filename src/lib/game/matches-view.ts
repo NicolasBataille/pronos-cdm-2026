@@ -38,6 +38,12 @@ export interface MatchView {
 
 const LOCK_BEFORE_MS = 0; // verrouillage au coup d'envoi
 
+/** Normalise le nom de groupe pour l'affichage : "GROUP_B" -> "B", "A" -> "A". */
+function cleanGroup(group: string | null): string | null {
+  if (!group) return null;
+  return group.replace(/^GROUP[_\s]?/i, "").trim() || null;
+}
+
 export function getMatches(userId: number | null): MatchView[] {
   const rows = db.select().from(matches).orderBy(asc(matches.kickoff)).all();
   const allTeams = new Map(db.select().from(teams).all().map((t) => [t.id, t]));
@@ -73,7 +79,7 @@ export function getMatches(userId: number | null): MatchView[] {
     return {
       id: m.id,
       stage: m.stage,
-      groupName: m.groupName,
+      groupName: cleanGroup(m.groupName),
       kickoff: m.kickoff.toISOString(),
       status: m.status,
       minute: m.minute,
@@ -84,10 +90,10 @@ export function getMatches(userId: number | null): MatchView[] {
       locked,
       isKnockout: isKnockout(m.stage),
       home: home
-        ? { id: home.id, name: home.name, tla: home.tla, emblem: home.emblem, groupName: home.groupName }
+        ? { id: home.id, name: home.name, tla: home.tla, emblem: home.emblem, groupName: cleanGroup(home.groupName) }
         : null,
       away: away
-        ? { id: away.id, name: away.name, tla: away.tla, emblem: away.emblem, groupName: away.groupName }
+        ? { id: away.id, name: away.name, tla: away.tla, emblem: away.emblem, groupName: cleanGroup(away.groupName) }
         : null,
       myPrediction: mp
         ? {

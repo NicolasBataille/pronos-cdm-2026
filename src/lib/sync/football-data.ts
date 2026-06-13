@@ -15,6 +15,14 @@ interface FdTeam {
   crest: string | null;
 }
 
+interface FdMatchTeam {
+  id: number | null;
+  name: string | null;
+  shortName?: string | null;
+  tla?: string | null;
+  crest?: string | null;
+}
+
 interface FdMatch {
   id: number;
   stage: string;
@@ -22,8 +30,8 @@ interface FdMatch {
   utcDate: string;
   status: string;
   minute?: number | string | null;
-  homeTeam: { id: number | null; name: string | null };
-  awayTeam: { id: number | null; name: string | null };
+  homeTeam: FdMatchTeam;
+  awayTeam: FdMatchTeam;
   score: {
     winner: string | null;
     fullTime: { home: number | null; away: number | null };
@@ -50,6 +58,19 @@ async function fetchJson(url: string): Promise<unknown> {
     throw new Error(`football-data ${res.status}: ${await res.text().catch(() => "")}`);
   }
   return res.json();
+}
+
+function upsertMatchTeam(t: FdMatchTeam, group: string | null): number {
+  return upsertTeam(
+    {
+      id: t.id as number,
+      name: t.name ?? "?",
+      shortName: t.shortName ?? null,
+      tla: t.tla ?? null,
+      crest: t.crest ?? null,
+    },
+    group,
+  );
 }
 
 function upsertTeam(t: FdTeam, group: string | null): number {
@@ -81,14 +102,8 @@ export async function syncFixtures(): Promise<{ teams: number; matches: number }
 
   for (const m of data.matches) {
     if (m.homeTeam.id == null || m.awayTeam.id == null) continue;
-    const homeId = upsertTeam(
-      { id: m.homeTeam.id, name: m.homeTeam.name ?? "?", shortName: null, tla: null, crest: null },
-      m.group,
-    );
-    const awayId = upsertTeam(
-      { id: m.awayTeam.id, name: m.awayTeam.name ?? "?", shortName: null, tla: null, crest: null },
-      m.group,
-    );
+    const homeId = upsertMatchTeam(m.homeTeam, m.group);
+    const awayId = upsertMatchTeam(m.awayTeam, m.group);
     teamCount += 2;
 
     upsertMatch(m, homeId, awayId);
@@ -158,14 +173,8 @@ export async function syncLive(): Promise<{ updated: number; settled: number }> 
   let updated = 0;
   for (const m of data.matches) {
     if (m.homeTeam.id == null || m.awayTeam.id == null) continue;
-    const homeId = upsertTeam(
-      { id: m.homeTeam.id, name: m.homeTeam.name ?? "?", shortName: null, tla: null, crest: null },
-      m.group,
-    );
-    const awayId = upsertTeam(
-      { id: m.awayTeam.id, name: m.awayTeam.name ?? "?", shortName: null, tla: null, crest: null },
-      m.group,
-    );
+    const homeId = upsertMatchTeam(m.homeTeam, m.group);
+    const awayId = upsertMatchTeam(m.awayTeam, m.group);
     if (upsertMatch(m, homeId, awayId)) updated += 1;
   }
 
